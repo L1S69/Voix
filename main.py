@@ -1,5 +1,6 @@
 import os
 
+import moviepy.editor as mp
 import telebot
 from gradio_client import Client
 
@@ -26,13 +27,31 @@ def send_welcome(message):
 
 
 # Download a voice message and run it through API
-@bot.message_handler(content_types=['voice'])
-def voice_processing(message):
-  file_info = bot.get_file(message.voice.file_id)
+@bot.message_handler(content_types=['voice', 'audio'])
+def get_audio(message):
+  file_info = bot.get_file(
+      message.voice.file_id if message.voice else message.audio.file_id)
   downloaded_file = bot.download_file(file_info.file_path)
   with open('temp.ogg', 'wb') as new_file:
     new_file.write(downloaded_file)
 
+  transcribe(message)
+
+
+@bot.message_handler(content_types=['video_note'])
+def get_audio_from_video(message):
+  file_info = bot.get_file(message.video_note.file_id)
+  downloaded_file = bot.download_file(file_info.file_path)
+  with open("temp.mp4", 'wb') as new_file:
+    new_file.write(downloaded_file)
+
+  video = mp.VideoFileClip("temp.mp4")
+  video.audio.write_audiofile("temp.ogg")
+
+  transcribe(message)
+
+
+def transcribe(message):
   response = client.predict("temp.ogg")
   text = response
   bot.reply_to(message, text)
