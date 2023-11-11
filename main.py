@@ -26,7 +26,7 @@ def send_welcome(message):
       f"me a voice message or add me to a group to get started")
 
 
-# Download a voice message and run it through API
+# Download a voice message
 @bot.message_handler(content_types=['voice', 'audio'])
 def get_audio(message):
   file_info = bot.get_file(
@@ -38,6 +38,7 @@ def get_audio(message):
   transcribe(message)
 
 
+# Download a video message and extract audio from it
 @bot.message_handler(content_types=['video_note'])
 def get_audio_from_video(message):
   file_info = bot.get_file(message.video_note.file_id)
@@ -48,9 +49,12 @@ def get_audio_from_video(message):
   video = mp.VideoFileClip("temp.mp4")
   video.audio.write_audiofile("temp.ogg")
 
+  os.remove("temp.mp4")
+
   transcribe(message)
 
 
+# Run audio throuh API
 def transcribe(message):
   response = client.predict("temp.ogg")
   text = response
