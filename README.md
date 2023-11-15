@@ -1,7 +1,7 @@
 # Voice Message Transcriber Bot
 This project is a Telegram bot that transcribes voice messages. It is built with Python and the Telebot library.
 
-You can find running instance of this bot [here](https://t.me/voix_bot).
+You can find running instance of this bot [here](https://t.me/nekovoice_bot).
 
 ## Installation
 
